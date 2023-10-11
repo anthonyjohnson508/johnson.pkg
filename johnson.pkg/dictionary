@@ -1,0 +1,21 @@
+Unique_ID <- A unique number assigned to an alligator in order to differentiate it from others, animals with lower numbers were typcially sampled before animals with higher numbers. 
+
+Date <- the date in which the alligator was sampled
+
+TL <- Total length (TL) is a measurement from the tip of the alligators snout to the end of the tail (units are in centimeters).
+
+H_L_Ratio <- The ratio of heterophils to lympocytes (used as an indicator of stress). This measure is made by counting the first 100 white blood cells on a blood smear then taking the total heterophils observed and dividing them by the total lympocytes observed.
+
+Sex <- A binary response (male or female) indicating the biological sex of the alligator made by cloacal examination.
+
+Nesting_Season <- A binary response (yes or no) indicating if the alligator was sampled during the typical nesting period in Louisiana (April - May).
+
+Breading_season <- A binary response (yes or no) indicating if the alligator was sampled during the typical breeding period in Louisiana (June - July). 
+
+Breading_size <- A binary response (yes or no) indicating if the alligator was above the typical breeding size of 182 cm. 
+
+Class <- Categorical data based on the size of the alligator indicating if hatchling (approximately 1 year or less), juvenile, or adult (approximately greater than 10 years) (Hatchlings ≤ 30 cm, juveniile 31 - 181 cm , adult > 182 cm).
+
+Lat <- The latitude where the alligator was sampled recorded in decimal degrees.
+
+Long <- The longitude where the alligator was sampled recorded in decimal degrees.
