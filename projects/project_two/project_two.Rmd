@@ -1,0 +1,286 @@
+---
+title: "Project Two"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Due Oct. 13 at 11:59 PM. 
+
+For this first part of the exam, you can either use `surveys_complete.csv` or your own data. If you are using your own data, you must have data in which you think you have a numerical predictor variable and a numerical response variable. If you are using `surveys_complete`, you can use weight and hindfoot_length for this.
+
+Save this file in your `projects` directory. You can either save it in a project two subdirectory, or just put it in projects. Either way is fine.
+
+
+1) Load in your data. Which variable will you be using as a predictor, and which as a response? (5 pts)
+
+```{r}
+# read in data here
+
+alligators <- read.csv("Alligator_Fake_Data_V2.csv")
+
+alligators
+```
+
+```
+# Answer which column is predictor and which is response
+
+TL (total length) is a predictor 
+H_L_Ratio is a response
+
+```
+
+2) Plot the two against each other with a scatter plot. Do the data appear to be related linearly? (5 pts)
+
+
+```{r}
+# Plot here
+
+ggplot(alligators, aes(x = TL, y = H_L_Ratio)) + geom_point()
+
+
+```
+
+```
+#Answer here
+
+No, they variables do not appear to be related linearly.
+```
+
+
+3) Fit the linear model. View the summary. (5 pts)
+
+
+```{r}
+# Code here
+
+model_fitG <- lm(H_L_Ratio ~ TL, data = alligators)
+summary(model_fitG)
+```
+
+4) Does the summary make sense when you compare it to the plot you made? Does our model have good predictive power? Evaluate the residual standard error, intercept, and R-Squared in particular. Would you say your predictor predicts the response?  (10 pts)
+
+
+```
+# Answer here
+
+Yes the summary makes sense. The summary like agrees that this is not very useful and does not have good predictive power. 
+
+Residual standard error is 0.79 which is a pretty high value indicating that this is not very predictive and has a relativley high standard error.
+
+The intercept is suggesting that if we could have a total length of 0, then we should expect HL ratio of 1.621 which like we discussed is not really a usefull statistic in that it is not biologically possible.
+
+R-squared and adjusted R-squared give us an indication of the correlation. A higher value represents a more confident correlation. For instance when we were looking at the crabs data they often had an R-squared value close to .98 indicating a very high correlation. My data on the other hand is not very useful as apparent by the very small number. 
+
+I would not say that my predictor predicts the response.
+
+
+```
+
+
+5) Plot the model on the graph. Increase the size of the text so it is comfortably readable at 5 feet. Make sure axis labels are readable and not overlapping with one another. (5 pts)
+
+
+```{r}
+# Code here
+
+alligator_plot <- ggplot(alligators, aes(x = TL, y = H_L_Ratio)) +
+  geom_point(size = 1.4) +
+  geom_smooth(method = "lm", color = "darkgreen", size = 1.0, fill = "darkgrey") +
+  annotate("text", x = 40, y = 40, label = "R^2 == -0.010", parse = TRUE) +
+  theme_bw() +
+  theme(text = element_text(size = 18)) 
+
+alligator_plot +
+  labs(x = "Total Length", y = "H/L Ratio", 
+       title = "Alligator H/L Ratio by Length")
+```
+
+6) Check the normality of the residuals. Do they look OK? Are we violating assumptions? (5 pts)
+
+```{r}
+
+#Code here
+
+model_fit <- lm(H_L_Ratio ~ TL, data = alligators)
+broom::tidy(model_fit) 
+broom::augment(model_fit) 
+
+
+augment(model_fit) ->augmented_fit
+library(broom)
+augment(model_fit) ->augmented_fit
+augmented_fit
+
+qqnorm(augmented_fit$.resid)
+qqline(augmented_fit$.resid, col = "red")
+
+
+# our residuals mostly fall off of the line indicating that they are not great, I would say that we are violating the assumption that our residuals are normal if we were to continue with this in reality.
+```
+
+Why is normality of residuals important? 
+
+```{r}
+
+#Answer here
+
+I think the most imporant reason is that it provides us with an indication of how useful the model is, and if there is predicitive power. Without normal residuals, we should expect that the model is not doing a great job.
+```
+
+7) If you are using `surveys_complete`: Is there interspecific variation in the linear model? Hint: look at our prior work with facet plots. (15 pts) 
+
+If you are *not* using  `surveys_complete`: Do you think there are groupings within your data that may have a separate linear model? Try grouping the data by that variable and redoing the lm. If this would not make sense for your data, you may also attempt to do multiple predictor variables. (15 pts)
+
+```{r}
+#1st a little data manipulation. Adding a k means cluster goup to tie in lat long data for the linear model
+library(class)
+
+coordinates_matrix <- alligators[c("Lat", "Long")]
+k <- 5  
+kmeans_result <- kmeans(coordinates_matrix, centers = k)
+
+alligators$cluster <- kmeans_result$cluster
+
+cluster_counts <- alligators %>%
+  group_by(cluster) %>%
+  summarise(unique_ids = n_distinct(Unique_ID))
+
+ggplot(cluster_counts, aes(x = as.factor(cluster), y = unique_ids)) +
+  geom_col(fill = "darkgrey", color = "darkgreen") +
+  labs(x = "Cluster Group", y = "Alligators", title = "Alligators per Cluster Group") +
+  theme_minimal()
+  
+head(alligators)
+
+```
+```{r}
+#and a little vizualization
+
+boxplot <- ggplot(alligators, aes(x = as.factor(cluster), y = H_L_Ratio)) +
+  geom_boxplot(fill = "grey", color = "black") +
+  labs(x = "Cluster Group", y = "H/L Ratio", 
+       title = "Alligator H/L Ratio Distribution by Cluster Group") +
+  theme_minimal()
+
+boxplot
+```
+
+
+```{r}
+#code here
+#multiple predictors
+
+model_fitG2 <- lm(H_L_Ratio ~ cluster + TL + Class, data = alligators)
+summary(model_fitG2)
+
+
+```
+
+## Part Two
+
+In this portion, you are free to use your own data if you have a categorical predictor variable and a response variable. Otherwise, you may use the columns sex and weight in `surveys_complete`
+
+1) First, plot the data grouped by sex (5 pts)
+
+```{r}
+
+# plot code here
+ggplot(alligators, aes(x = Sex, y = H_L_Ratio, color = Sex))+ geom_jitter()
+
+
+```
+
+2) Try an ANOVA of this data (5 pt)
+
+```{r}
+# ANOVA code here
+
+
+
+#ANOVA
+aov(gator_model_fit) -> gator_anova_model_fit
+summary(gator_anova_model_fit)
+```
+
+3) How about a linear model? What information does this give you that an ANOVA can't? (5 pts)
+
+
+```{r}
+#Code here
+
+gator_model_fit <- lm(H_L_Ratio ~ Sex + TL, data = alligators) 
+summary(gator_model_fit)
+
+```
+
+```
+#Answer here
+
+The linear model gives quite a bit more information including residual standard error, multiple R-squared and adjusted R-squared, that is because it is intended to be a predictive model for numeric data where as the anova is looking at differeneces in means between groups.
+
+both provide P-values and F-statistics
+both provide degrees of freedom
+```
+
+3) Plot the lm with the data, with points colored by sex. (10 pts)
+
+
+```{r}
+#Plot code here
+
+ggplot(alligators, aes(x = TL, H_L_Ratio, color = Sex )) + geom_point()+ scale_color_manual(values = c("#D52A5B", "#2AD5A4")) + geom_smooth(method = "lm")
+ 
+```
+
+4) Choose any model we've looked at so far, but use two predictor variables. Perform an LM, plot the results, and state if this changes your interpretation of the relationship between variables (10 pts)
+
+```{r}
+# LM Code Here 
+
+gator_model_fit_v2 <- lm(H_L_Ratio ~ Class + cluster, data = alligators) 
+summary(gator_model_fit_v2)
+
+```
+
+```{r}
+# Plot Code Here 
+
+jitter_plot <- ggplot(alligators, aes(x = as.factor(cluster), y = H_L_Ratio, color = Class)) +
+  geom_jitter(width = 0.2, height = 0, size = 3.5, alpha = 0.7) +
+  labs(x = "Cluster Group", y = "H/L Ratio", 
+       title = "H/L Ratio by Cluster Group and Class") +
+  theme_minimal() +
+  scale_color_manual(values = c("Adult" = "#edae49", "Hatchling" = "#d1495b", "Juvenile" = "#00798c"))
+
+jitter_plot
+
+```
+
+
+```
+# Text answer here
+
+Yes there it does change my interpretation of the data. When I first ran the LM I saw that cluster predictor variable appears to be a significant predictor of HL ratio, however once I ploted it, It seams less obvious. To me this shows how both are important for understanding your data.
+```
+
+## Part Three
+
+
+1) Add and commit this document (5 pts)
+
+```
+#Commands here
+```
+
+2) Push your changes to github (10 pts)
+
+```
+#Commands here
+```
+
+
+
+# MS students
+
+My expectation is that you'll do this with your own data. If any part of this doesn't make sense with your data, please get in touch ASAP so we can work it out.
