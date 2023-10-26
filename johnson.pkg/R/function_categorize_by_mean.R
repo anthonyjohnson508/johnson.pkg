@@ -5,7 +5,7 @@
 #'
 #'
 #'@param data the data set being used, should be .csv
-#'@param column_name this is the column that you wish to peform the analysis on. This should be your total length column. 
+#'@param column_name this is the column that you wish to perform the analysis on. This should be your total length column. 
 #'@return a mutated data set that adds an additional column Size, under the new column each observation will receive a value Large or Small.
 #'
 #'@export 
