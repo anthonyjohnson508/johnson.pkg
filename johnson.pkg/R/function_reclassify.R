@@ -1,7 +1,7 @@
-#' This function adds categories to a column.
+#' This function cleans the data by making a correction to the animals classification
 #'
-#'This function changes the class from three categories (hatching, juvenile, and adult) to four categories (hatching, juvenile, subadult, and adult).
-#'
+#'Using this function alows the user to correct their class column from three categories (hatching, juvenile, and adult) to four categories (hatching, juvenile, subadult, and adult).
+#'This function does not delete the original column, rather adds a NewClass column with the updated classification. 
 #'
 #'@param data the dataset being used, should be .csv
 #'@param column_name The name of the column to be altered
